@@ -26,6 +26,9 @@ OBJS=\
 DEPENDFLAGS := -MD -MP
 
 INCLUDES    += -I$(INCLUDEDIR)
+INCLUDES    += $(shell pkg-config --cflags opencv)
+
+LIBS        += $(shell pkg-config --libs opencv) 
 
 BASEFLAGS   += -O0 -g -fpic -pedantic -pedantic-errors
 WARNFLAGS   += -Wall
@@ -38,7 +41,7 @@ CXXFLAGS    += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 
 all: $(OBJS)
 	$(info ********************************* Linking *********************************)
-	$(GNUPREFIX)g++ -o $(OUTPUTDIR)/$(APPNAME) $(OBJS)
+	$(GNUPREFIX)g++ -o $(OUTPUTDIR)/$(APPNAME) $(OBJS) $(LIBS) 
 	chmod +x $(OUTPUTDIR)/$(APPNAME)
 
 .PHONY: clean
