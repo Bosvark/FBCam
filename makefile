@@ -7,7 +7,7 @@ OUTPUTDIR  = ./out
 
 # build environment
 #GNUPREFIX     = arm-unknown-linux-gnueabi-
-GNUPREFIX=
+#GNUPREFIX=
 
 ######################################
 # common makefile definition section #
@@ -50,7 +50,7 @@ clean:
 	rm -f $(OBJS)
 
 # C++
-%.cpp %.o: | $(OUTPUTDIR)
+%.cpp %.o:
 	$(info ********************************* Compiling C++ *********************************)
 	$(GNUPREFIX)g++ $(CXXFLAGS) -c $< -o $@
 
