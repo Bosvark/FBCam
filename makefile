@@ -2,7 +2,7 @@
 
 APPNAME    = fbcam
 SOURCEDIR  = ./src
-INCLUDEDIR = ./include
+INCLUDEDIR = ./incl
 OUTPUTDIR  = ./out
 
 # build environment
@@ -20,6 +20,7 @@ SOURCES_CPP := $(wildcard *.cpp)
 
 # object files
 OBJS=\
+     $(OUTPUTDIR)/frame.o \
      $(OUTPUTDIR)/main.o
 
 # Build flags
@@ -68,4 +69,5 @@ clean:
 
 .PHONY:$(OBJDIR)
 
+$(OUTPUTDIR)/frame.o   : $(SOURCEDIR)/frame.cpp $(INCLUDEDIR)/frame.h
 $(OUTPUTDIR)/main.o   : $(SOURCEDIR)/main.cpp
