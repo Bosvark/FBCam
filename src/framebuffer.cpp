@@ -65,4 +65,17 @@ FrameBuffer::~FrameBuffer()
 	}
 }
 
+int FrameBuffer::put(unsigned int location, unsigned char value)
+{
+	*(fbp + location) = value;
+	return 0;
+}
+
+int FrameBuffer::put(unsigned int location, unsigned short value)
+{
+	*(fbp + location) = (char)value;
+	*(fbp + location + 1) = (char)(value >> 8);
+	return 0;
+}
+
 }

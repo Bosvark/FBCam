@@ -12,10 +12,15 @@ public:
 	FrameBuffer(std::string device);
 	~FrameBuffer();
 
+	int put(unsigned int location, unsigned char value);
+	int put(unsigned int location, unsigned short value);
 	bool isOpen(){return (fbh>0?true:false);}
-	int height(){return this->vinfo.yres;}
-	int width(){return this->vinfo.xres;}
-	int bps(){return this->vinfo.bits_per_pixel;}
+	unsigned int height(){return this->vinfo.yres;}
+	unsigned int width(){return this->vinfo.xres;}
+	unsigned int bps(){return this->vinfo.bits_per_pixel;}
+	unsigned int xoffset(){return this->vinfo.xoffset;}
+	unsigned int yoffset(){return this->vinfo.yoffset;}
+	unsigned int line_length(){return this->finfo.line_length;}
 
 private:
 	int fbh;
