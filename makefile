@@ -20,7 +20,8 @@ SOURCES_CPP := $(wildcard *.cpp)
 
 # object files
 OBJS=\
-     $(OUTPUTDIR)/frame.o \
+     $(OUTPUTDIR)/frame.o           \
+     $(OUTPUTDIR)/framebuffer.o     \
      $(OUTPUTDIR)/main.o
 
 # Build flags
@@ -69,5 +70,6 @@ clean:
 
 .PHONY:$(OBJDIR)
 
-$(OUTPUTDIR)/frame.o   : $(SOURCEDIR)/frame.cpp $(INCLUDEDIR)/frame.h
-$(OUTPUTDIR)/main.o   : $(SOURCEDIR)/main.cpp
+$(OUTPUTDIR)/frame.o         : $(SOURCEDIR)/frame.cpp $(INCLUDEDIR)/frame.h
+$(OUTPUTDIR)/framebuffer.o   : $(SOURCEDIR)/framebuffer.cpp $(INCLUDEDIR)/framebuffer.h
+$(OUTPUTDIR)/main.o          : $(SOURCEDIR)/main.cpp

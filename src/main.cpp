@@ -1,6 +1,7 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#include "framebuffer.h"
 
 #define VERSION_MAJOR	1
 #define VERSION_MINOR	0
@@ -10,6 +11,16 @@ int main(int argc, char *argv[])
 {
 	std::cout << APP_NAME << " " << VERSION_MAJOR << "." << VERSION_MINOR << std::endl;
 
+	fb::FrameBuffer fb = fb::FrameBuffer("/dev/fb0");
+
+	if(!fb.isOpen()){
+		perror("Failed to open framebuffer device\n");
+		exit(1);
+	}
+
+	std::cout << "Framebuffer width: " << fb.width() << std::endl;
+
+#if 0	// Opencv test code
 	cv::VideoCapture cap(0);
 
 	if(!cap.isOpened()){
@@ -20,7 +31,7 @@ int main(int argc, char *argv[])
 	double dWidth = cap.get(CV_CAP_PROP_FRAME_WIDTH);
 	double dHeight = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
 
-	std::cout << "Frame sixe:" << dWidth << "x" << dHeight << std::endl;
+	std::cout << "Frame size:" << dWidth << "x" << dHeight << std::endl;
 
 	cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE);
 
@@ -41,6 +52,7 @@ int main(int argc, char *argv[])
 			break;
 		}
 	}
+#endif
 
 	return 0;
 }
