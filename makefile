@@ -5,9 +5,11 @@ SOURCEDIR  = ./src
 INCLUDEDIR = ./incl
 OUTPUTDIR  = ./out
 
+OPENCV_INCS = $(shell pkg-config --cflags opencv)
+OPENCV_LIBS = $(shell pkg-config --libs opencv)
+
 # build environment
-#GNUPREFIX     = arm-unknown-linux-gnueabi-
-#GNUPREFIX=
+GNUPREFIX     = arm-unknown-linux-gnueabi-
 
 ######################################
 # common makefile definition section #
@@ -28,9 +30,9 @@ OBJS=\
 DEPENDFLAGS := -MD -MP
 
 INCLUDES    += -I$(INCLUDEDIR)
-INCLUDES    += $(shell pkg-config --cflags opencv)
+INCLUDES    += 
 
-LIBS        += $(shell pkg-config --libs opencv) 
+LIBS        +=  
 
 BASEFLAGS   += -O0 -g -fpic -pedantic -pedantic-errors
 WARNFLAGS   += -Wall

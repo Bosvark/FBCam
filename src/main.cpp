@@ -1,6 +1,9 @@
 #include <iostream>
+#include <stdio.h>
+#if 0
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
+#endif
 #include "framebuffer.h"
 
 #define VERSION_MAJOR	1
@@ -15,7 +18,7 @@ int main(int argc, char *argv[])
 
 	if(!fb.isOpen()){
 		perror("Failed to open framebuffer device\n");
-		exit(1);
+		return 1;
 	}
 
 	std::cout << "Framebuffer width : " << fb.width() << std::endl;
