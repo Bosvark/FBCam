@@ -59,6 +59,7 @@ clean:
 # C++
 %.cpp %.o:
 	$(info ********************************* Compiling C++ *********************************)
+	@mkdir -p $(OUTPUTDIR)
 	$(GNUPREFIX)g++ $(CXXFLAGS) -c $< -o $@
 
 # C.
