@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdio.h>
-#if 0
+#if 1
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #endif
@@ -13,7 +13,7 @@
 int main(int argc, char *argv[])
 {
 	std::cout << APP_NAME << " " << VERSION_MAJOR << "." << VERSION_MINOR << std::endl;
-
+#if 0
 	fb::FrameBuffer fb = fb::FrameBuffer("/dev/fb0");
 
 	if(!fb.isOpen()){
@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
 			}
 		}
 	}
-
-#if 0	// Opencv test code
+#endif
+#if 1	// Opencv test code
 	cv::VideoCapture cap(0);
 
 	if(!cap.isOpened()){
