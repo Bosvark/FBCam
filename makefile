@@ -8,6 +8,8 @@ OUTPUTDIR  = ./out
 OPENCV_INCS = $(shell pkg-config --cflags opencv)
 OPENCV_LIBS = $(shell pkg-config --libs opencv)
 
+SYSROOT = /opt/arm/RaspberryPi/sysroot
+
 # build environment
 GNUPREFIX     = arm-linux-gnueabihf-
 
@@ -30,15 +32,15 @@ OBJS=\
 DEPENDFLAGS := -MD -MP
 
 INCLUDES    += -I$(INCLUDEDIR)
-INCLUDES    += 
+INCLUDES    += -I$(SYSROOT)/include -I$(SYSROOT)/usr/include -I$(SYSROOT)/usr/local/include
 
-LIBS        +=  
+LIBS        += -L$(SYSROOT)/lib -L$(SYSROOT)/usr/lib
 
-BASEFLAGS   += -O0 -g -fpic -pedantic -pedantic-errors
+BASEFLAGS   += -O0 -g -fpic -mthumb -fdata-sections -Wa,--noexecstack -fsigned-char -Wno-psabi -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4
 WARNFLAGS   += -Wall
 #WARNFLAGS   += -Werror
 ASFLAGS     += $(INCLUDES) $(DEPENDFLAGS) -D__ASSEMBLY__
-CFLAGS      += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS) -std=c99
+CFLAGS      += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 CXXFLAGS    += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 
 .PHONY: all
