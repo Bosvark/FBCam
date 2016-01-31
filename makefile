@@ -9,7 +9,7 @@ OPENCV_INCS = $(shell pkg-config --cflags opencv)
 OPENCV_LIBS = $(shell pkg-config --libs opencv)
 
 # build environment
-GNUPREFIX     = arm-unknown-linux-gnueabi-
+GNUPREFIX     = arm-linux-gnueabihf-
 
 ######################################
 # common makefile definition section #
