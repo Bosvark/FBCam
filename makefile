@@ -5,10 +5,11 @@ SOURCEDIR  = ./src
 INCLUDEDIR = ./incl
 OUTPUTDIR  = ./out
 
-OPENCV_INCS = $(shell pkg-config --cflags opencv)
-OPENCV_LIBS = $(shell pkg-config --libs opencv)
+SYSROOT = /home/dieter/Downloads/RaspberryPi/sysroot
 
-SYSROOT = /opt/arm/RaspberryPi/sysroot
+#OPENCV_INCS = $(shell pkg-config --cflags opencv)
+#OPENCV_LIBS = $(shell pkg-config --libs opencv)
+OPENCV_LIBS = -L$(SYSROOT)/lib -lopencv_core -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_imgcodecs -lopencv_imgproc
 
 # build environment
 GNUPREFIX     = arm-linux-gnueabihf-
@@ -34,7 +35,7 @@ DEPENDFLAGS := -MD -MP
 INCLUDES    += -I$(INCLUDEDIR)
 INCLUDES    += -I$(SYSROOT)/include -I$(SYSROOT)/usr/include -I$(SYSROOT)/usr/local/include
 
-LIBS        += -L$(SYSROOT)/lib -L$(SYSROOT)/usr/lib
+LIBS        += -lpthread $(OPENCV_LIBS)
 
 BASEFLAGS   += -O0 -g -fpic -mthumb -fdata-sections -Wa,--noexecstack -fsigned-char -Wno-psabi -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4
 WARNFLAGS   += -Wall
@@ -47,7 +48,7 @@ CXXFLAGS    += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 
 all: $(OBJS)
 	$(info ********************************* Linking *********************************)
-	$(GNUPREFIX)g++ -o $(OUTPUTDIR)/$(APPNAME) $(OBJS) $(LIBS) 
+	$(GNUPREFIX)g++ -Wl,--sysroot=$(SYSROOT) -o $(OUTPUTDIR)/$(APPNAME) $(OBJS) $(LIBS) 
 	chmod +x $(OUTPUTDIR)/$(APPNAME)
 
 .PHONY: clean
