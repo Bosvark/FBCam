@@ -5,7 +5,7 @@ SOURCEDIR  = ./src
 INCLUDEDIR = ./incl
 OUTPUTDIR  = ./out
 
-SYSROOT = /home/dieter/Downloads/RaspberryPi/sysroot
+SYSROOT = /opt/arm/RaspberryPi/sysroot
 
 #OPENCV_INCS = $(shell pkg-config --cflags opencv)
 #OPENCV_LIBS = $(shell pkg-config --libs opencv)
