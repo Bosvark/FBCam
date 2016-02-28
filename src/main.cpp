@@ -56,12 +56,18 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
-	double dWidth = cap.get(CV_CAP_PROP_FRAME_WIDTH);
-	double dHeight = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
+	cv::Size refS = cv::Size((int) cap.get(CV_CAP_PROP_FRAME_WIDTH),
+					 (int) cap.get(CV_CAP_PROP_FRAME_HEIGHT));
+return 0;
+	int dWidth = refS.width;
+	int dHeight = refS.height;
+
+//	double dWidth = cap.get(CV_CAP_PROP_FRAME_WIDTH);
+//	double dHeight = cap.get(CV_CAP_PROP_FRAME_HEIGHT);
 
 	std::cout << "Frame size:" << dWidth << "x" << dHeight << std::endl;
 
-	cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE);
+//	cv::namedWindow("MyVideo", CV_WINDOW_AUTOSIZE);
 
 	while(1){
 		cv::Mat frame;
@@ -73,7 +79,7 @@ int main(int argc, char *argv[])
 			break;
 		}
 
-		cv::imshow("MyVideo", frame);
+//		cv::imshow("MyVideo", frame);
 
 		if(cv::waitKey(30) == 27){
 			std::cout << "Escape key pressed" << std::endl;
@@ -84,3 +90,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
+

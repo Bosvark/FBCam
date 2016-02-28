@@ -5,12 +5,9 @@ SOURCEDIR  = ./src
 INCLUDEDIR = ./incl
 OUTPUTDIR  = ./out
 
-SYSROOT = /opt/arm/RaspberryPi/sysroot
+SYSROOT = /opt/arm/RaspberryPi2/sysroot
 
-#OPENCV_INCS = $(shell pkg-config --cflags opencv)
-#OPENCV_LIBS = $(shell pkg-config --libs opencv)
-OPENCV_LIBS = -L$(SYSROOT)/lib -lopencv_core -lopencv_highgui -lopencv_video -lopencv_videoio -lopencv_imgcodecs -lopencv_imgproc
-
+OPENCV_LIBS = -L$(SYSROOT)/usr/local/lib -lopencv_shape -lopencv_stitching -lopencv_objdetect -lopencv_superres -lopencv_videostab -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_video -lopencv_photo -lopencv_ml -lopencv_imgproc -lopencv_flann -lopencv_core
 # build environment
 GNUPREFIX     = arm-linux-gnueabihf-
 
@@ -35,11 +32,12 @@ DEPENDFLAGS := -MD -MP
 INCLUDES    += -I$(INCLUDEDIR)
 INCLUDES    += -I$(SYSROOT)/include -I$(SYSROOT)/usr/include -I$(SYSROOT)/usr/local/include
 
-LIBS        += -lpthread $(OPENCV_LIBS)
+LIBS += -Wl,-rpath-link,$(SYSROOT)/lib/arm-linux-gnueabihf -Wl,-rpath-link,$(SYSROOT)/usr/lib/arm-linux-gnueabihf -Wl,-rpath-link,$(SYSROOT)/usr/local/lib 
+LIBS        += -ldl -lm -lpthread -lrt $(OPENCV_LIBS)
 
-BASEFLAGS   += -O0 -g -fpic -mthumb -fdata-sections -Wa,--noexecstack -fsigned-char -Wno-psabi -mcpu=cortex-a7 -mfloat-abi=hard -mfpu=vfpv4
+BASEFLAGS   += -Wl,--sysroot=$(SYSROOT) -std=c++14 -O0 -g -fpic -fdata-sections -Wa,--noexecstack -fsigned-char -Wno-psabi
 WARNFLAGS   += -Wall
-#WARNFLAGS   += -Werror
+WARNFLAGS   += -Werror
 ASFLAGS     += $(INCLUDES) $(DEPENDFLAGS) -D__ASSEMBLY__
 CFLAGS      += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 CXXFLAGS    += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
