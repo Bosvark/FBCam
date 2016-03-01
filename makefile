@@ -4,6 +4,7 @@ APPNAME    = fbcam
 SOURCEDIR  = ./src
 INCLUDEDIR = ./incl
 OUTPUTDIR  = ./out
+NFSDIR     = /export/nfs
 
 SYSROOT = /opt/arm/RaspberryPi2/sysroot
 
@@ -37,7 +38,7 @@ LIBS        += -ldl -lm -lpthread -lrt $(OPENCV_LIBS)
 
 BASEFLAGS   += -Wl,--sysroot=$(SYSROOT) -std=c++14 -O0 -g -fpic -fdata-sections -Wa,--noexecstack -fsigned-char -Wno-psabi
 WARNFLAGS   += -Wall
-WARNFLAGS   += -Werror
+//WARNFLAGS   += -Werror
 ASFLAGS     += $(INCLUDES) $(DEPENDFLAGS) -D__ASSEMBLY__
 CFLAGS      += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 CXXFLAGS    += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
@@ -48,6 +49,7 @@ all: $(OBJS)
 	$(info ********************************* Linking *********************************)
 	$(GNUPREFIX)g++ -Wl,--sysroot=$(SYSROOT) -o $(OUTPUTDIR)/$(APPNAME) $(OBJS) $(LIBS) 
 	chmod +x $(OUTPUTDIR)/$(APPNAME)
+	cp $(OUTPUTDIR)/$(APPNAME) $(NFSDIR)/.
 
 .PHONY: clean
 
