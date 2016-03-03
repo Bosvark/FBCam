@@ -83,6 +83,10 @@ int main(int argc, char *argv[])
 	}
 
 	char display_frame_info_flag=1;
+	unsigned int fps=0;
+	double tick = (double)cv::getTickCount();
+	double tick_freq = cv::getTickFrequency();
+	double current_tick = 0;
 
 	while(1){
 		cv::Mat frame;
@@ -115,6 +119,19 @@ int main(int argc, char *argv[])
 		}
 
 		display_frame(frame, fb);
+
+//		std::cout << "Fps:" << cap.get(CV_CAP_PROP_FPS) << "         " << "\r";
+
+		current_tick = ((double)cv::getTickCount() - tick)/tick_freq;
+
+		if(current_tick >= 1.0){
+			std::cout << "Fps:" << fps << "         " << "\r" << std::flush;
+			fps = 0;
+			tick = (double)cv::getTickCount();
+		}else{
+			fps++;
+		}
+
 	}
 
 #if 0
