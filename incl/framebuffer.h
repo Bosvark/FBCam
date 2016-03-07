@@ -14,6 +14,7 @@ public:
 
 	int put(unsigned int location, unsigned char value);
 	int put(unsigned int location, unsigned short value);
+	int put_pixel(int x, int y, unsigned short value);
 	bool isOpen(){return (fbh>0?true:false);}
 	unsigned int height(){return this->vinfo.yres;}
 	unsigned int width(){return this->vinfo.xres;}
@@ -27,6 +28,10 @@ private:
 	struct fb_var_screeninfo vinfo;
 	struct fb_fix_screeninfo finfo;
 	char *fbp;
+
+	int bytes_per_pixel;
+	int x_bytes_per_pixel;
+	int y_bytes_per_pixel;
 };
 
 }

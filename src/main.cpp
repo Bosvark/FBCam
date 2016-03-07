@@ -9,6 +9,8 @@
 #define VERSION_MINOR	0
 #define APP_NAME		"FBCam"
 
+char cspace[255];
+
 int info(void)
 {
 	fb::FrameBuffer fb = fb::FrameBuffer("/dev/fb0");
@@ -31,6 +33,7 @@ int info(void)
 	std::cout << "Framebuffer width : " << fb.width() << std::endl;
 	std::cout << "Framebuffer height: " << fb.height() << std::endl;
 	std::cout << "Bits per Pixel    : " << fb.bps() << std::endl;
+	std::cout << "Line length       : " << fb.line_length() << std::endl;
 
 	std::cout << std::endl;
 
@@ -39,21 +42,35 @@ int info(void)
 	return 0;
 }
 
+int scale=2;
+int frame_offset_x=0;
+int frame_offset_y=0;
+
 int display_frame(cv::Mat &frame, fb::FrameBuffer &fb)
 {
+	int x_scaled=0;
+	int y_scaled=0;
+
 	for(int y=0; y<frame.rows; y++)
 	{
 		for(int x=0; x<frame.cols; x++)
 		{
 			cv::Vec3b intensity = frame.at<cv::Vec3b>(y, x);
-			uchar b = intensity.val[0]/8;
-			uchar g = intensity.val[1]/4;
-			uchar r = intensity.val[2]/8;
+
+			uchar b = intensity.val[0]>>3;	// Divide by 8
+			uchar g = intensity.val[1]>>3;	// Divide by 8
+			uchar r = intensity.val[2]>>3;	// Divide by 8
 
 			unsigned short int t = r<<11 | g << 5 | b;
-			long int location = (y * fb.line_length()) + (x* (fb.bps()/8));
 
-			fb.put(location, t);
+			x_scaled = x * scale;
+			y_scaled = y * scale;
+
+			fb.put_pixel((x_scaled)+frame_offset_x, (y_scaled)+frame_offset_y, t);
+			fb.put_pixel((x_scaled+1)+frame_offset_x, (y_scaled)+frame_offset_y, t);
+
+			fb.put_pixel((x_scaled)+frame_offset_x, (y_scaled+1)+frame_offset_y, t);
+			fb.put_pixel((x_scaled+1)+frame_offset_x, (y_scaled+1)+frame_offset_y, t);
 		}
 	}
 
@@ -80,6 +97,11 @@ int main(int argc, char *argv[])
 	if(!cap.isOpened()){
 		std::cout << "Cannot open video stream" << std::endl;
 		return -2;
+	}
+
+	// Calculate color space reduction lookup table
+	for (int i=0; i<255; i++){
+		cspace[i] = (char)(i/8);
 	}
 
 	char display_frame_info_flag=1;
@@ -116,6 +138,10 @@ int main(int argc, char *argv[])
 				case CV_32F: std::cout << "Depth: CV_32F" << std::endl; break;
 				case CV_64F: std::cout << "Depth: CV_64F" << std::endl; break;
 			}
+
+			frame_offset_x=((fb.width() - (frame.cols*scale))/2);
+			frame_offset_y=((fb.height() - (frame.rows*scale))/2);
+
 		}
 
 		display_frame(frame, fb);
