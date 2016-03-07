@@ -53,6 +53,8 @@ int display_frame(cv::Mat &frame, fb::FrameBuffer &fb)
 
 	for(int y=0; y<frame.rows; y++)
 	{
+		y_scaled = (y * scale) + frame_offset_y;
+
 		for(int x=0; x<frame.cols; x++)
 		{
 			cv::Vec3b intensity = frame.at<cv::Vec3b>(y, x);
@@ -63,14 +65,13 @@ int display_frame(cv::Mat &frame, fb::FrameBuffer &fb)
 
 			unsigned short int t = r<<11 | g << 5 | b;
 
-			x_scaled = x * scale;
-			y_scaled = y * scale;
+			x_scaled = (x * scale) + frame_offset_x;
 
-			fb.put_pixel((x_scaled)+frame_offset_x, (y_scaled)+frame_offset_y, t);
-			fb.put_pixel((x_scaled+1)+frame_offset_x, (y_scaled)+frame_offset_y, t);
+			fb.put_pixel(x_scaled  , y_scaled, t);
+			fb.put_pixel(x_scaled+1, y_scaled, t);
 
-			fb.put_pixel((x_scaled)+frame_offset_x, (y_scaled+1)+frame_offset_y, t);
-			fb.put_pixel((x_scaled+1)+frame_offset_x, (y_scaled+1)+frame_offset_y, t);
+			fb.put_pixel(x_scaled  , y_scaled+1, t);
+			fb.put_pixel(x_scaled+1, y_scaled+1, t);
 		}
 	}
 
