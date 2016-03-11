@@ -50,12 +50,20 @@ int display_frame(cv::Mat &frame, fb::FrameBuffer &fb)
 {
 	int x_scaled=0;
 	int y_scaled=0;
+	int width=frame.cols;
+	int height=frame.rows;
 
-	for(int y=0; y<frame.rows; y++)
+	if(frame.cols > fb.width())
+		width = fb.width();
+
+	if(frame.rows > fb.height())
+		height = fb.height();
+
+	for(int y=0; y<height; y++)
 	{
 		y_scaled = (y * scale) + frame_offset_y;
 
-		for(int x=0; x<frame.cols; x++)
+		for(int x=0; x<width; x++)
 		{
 			cv::Vec3b intensity = frame.at<cv::Vec3b>(y, x);
 
