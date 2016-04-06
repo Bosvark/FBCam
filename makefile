@@ -43,11 +43,17 @@ ASFLAGS     += $(INCLUDES) $(DEPENDFLAGS) -D__ASSEMBLY__
 CFLAGS      += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 CXXFLAGS    += $(INCLUDES) $(DEPENDFLAGS) $(BASEFLAGS) $(WARNFLAGS)
 
+LDFLAGS     += -Wl,--sysroot=$(SYSROOT)
+
+# Profiling
+CXXFLAGS    += -pg
+LDFLAGS     += -pg
+
 .PHONY: all
 
 all: $(OBJS)
 	$(info ********************************* Linking *********************************)
-	$(GNUPREFIX)g++ -Wl,--sysroot=$(SYSROOT) -o $(OUTPUTDIR)/$(APPNAME) $(OBJS) $(LIBS) 
+	$(GNUPREFIX)g++ $(LDFLAGS) -o $(OUTPUTDIR)/$(APPNAME) $(OBJS) $(LIBS) 
 	chmod +x $(OUTPUTDIR)/$(APPNAME)
 	cp $(OUTPUTDIR)/$(APPNAME) $(NFSDIR)/.
 
