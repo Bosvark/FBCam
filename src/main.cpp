@@ -1,15 +1,21 @@
+#include <csignal>
 #include <iostream>
+#include <thread>
+#include <mutex>
 #include <stdio.h>
 #include <unistd.h>
 #include <opencv2/opencv.hpp>
-//#include <opencv2/core/types.hpp>
 #include "framebuffer.h"
+#include "VideoCapture.h"
 
 #define VERSION_MAJOR	1
 #define VERSION_MINOR	0
 #define APP_NAME		"FBCam"
 
 char cspace[255];
+
+bool exiting = false;
+bool cleanup_complete = false;
 
 int info(void)
 {
@@ -53,10 +59,10 @@ int display_frame(cv::Mat &frame, fb::FrameBuffer &fb)
 	int width=frame.cols;
 	int height=frame.rows;
 
-	if(frame.cols > fb.width())
+	if((unsigned int)frame.cols > fb.width())
 		width = fb.width();
 
-	if(frame.rows > fb.height())
+	if((unsigned int)frame.rows > fb.height())
 		height = fb.height();
 
 	for(int y=0; y<height; y++)
@@ -89,8 +95,25 @@ int display_frame(cv::Mat &frame, fb::FrameBuffer &fb)
 	return 0;
 }
 
+vc::fbcVideoCapture *tempvidcap=NULL;
+
+void signalHandler(int signum)
+{
+	if ((signum == SIGINT) || (signum == SIGQUIT)){
+		exiting = true;
+
+		tempvidcap->StopCapturing();
+
+		std::cout << std::endl << "User terminated" << std::endl;
+		exit(0);
+	}
+}
+
 int main(int argc, char *argv[])
 {
+	signal(SIGINT   , signalHandler);
+	signal(SIGQUIT  , signalHandler);
+
 	std::cout << APP_NAME << " " << VERSION_MAJOR << "." << VERSION_MINOR << std::endl;
 
 	if(info() < 0)
@@ -110,6 +133,13 @@ int main(int argc, char *argv[])
 		return -2;
 	}
 
+	vc::fbcVideoCapture vidcap(&cap);
+
+	std::thread vidcap_thread = vidcap.StartCapturing();
+
+	vidcap_thread.detach();
+	tempvidcap = &vidcap;
+
 	// Calculate color space reduction lookup table
 	for (int i=0; i<255; i++){
 		cspace[i] = (char)(i/8);
@@ -122,52 +152,52 @@ int main(int argc, char *argv[])
 	double current_tick = 0;
 
 	while(1){
-		cv::Mat frame;
+		if(vidcap.isFrameAvailable()){
+			cv::Mat frame;
 
-		bool bSuccess = cap.read(frame);
+			frame = vidcap.FetchFrame();
 
-		if(!bSuccess){
-			std::cout << "Cannot read frame from video stream" << std::endl;
-			break;
-		}
+			if(display_frame_info_flag){
+				display_frame_info_flag = 0;
 
-		if(display_frame_info_flag){
-			display_frame_info_flag = 0;
+				std::cout << "Frame Channels:" << frame.channels() << std::endl;
+				std::cout << "Color space:" << frame.type() << std::endl;
+				std::cout << "Step:" << frame.step1() << std::endl;
+				std::cout << "Continues:" << frame.isContinuous() << std::endl;
 
-			std::cout << "Frame Channels:" << frame.channels() << std::endl;
-			std::cout << "Color space:" << frame.type() << std::endl;
-			std::cout << "Step:" << frame.step1() << std::endl;
-			std::cout << "Continues:" << frame.isContinuous() << std::endl;
+				switch(frame.depth())
+				{
+					case CV_8U: std::cout << "Depth: CV_8U" << std::endl; break;
+					case CV_8S:  std::cout << "Depth: CV_8S" << std::endl; break;
+					case CV_16U: std::cout << "Depth: CV_16U" << std::endl; break;
+					case CV_16S: std::cout << "Depth: CV_16S" << std::endl; break;
+					case CV_32S: std::cout << "Depth: CV_32S" << std::endl; break;
+					case CV_32F: std::cout << "Depth: CV_32F" << std::endl; break;
+					case CV_64F: std::cout << "Depth: CV_64F" << std::endl; break;
+				}
 
-			switch(frame.depth())
-			{
-				case CV_8U: std::cout << "Depth: CV_8U" << std::endl; break;
-				case CV_8S:  std::cout << "Depth: CV_8S" << std::endl; break;
-				case CV_16U: std::cout << "Depth: CV_16U" << std::endl; break;
-				case CV_16S: std::cout << "Depth: CV_16S" << std::endl; break;
-				case CV_32S: std::cout << "Depth: CV_32S" << std::endl; break;
-				case CV_32F: std::cout << "Depth: CV_32F" << std::endl; break;
-				case CV_64F: std::cout << "Depth: CV_64F" << std::endl; break;
+				frame_offset_x=((fb.width() - (frame.cols*scale))/2);
+				frame_offset_y=((fb.height() - (frame.rows*scale))/2);
 			}
 
-			frame_offset_x=((fb.width() - (frame.cols*scale))/2);
-			frame_offset_y=((fb.height() - (frame.rows*scale))/2);
+			std::cout << "." << std::flush;
+
+			display_frame(frame, fb);
+
+			vidcap.FrameRefresh();
+
+	//		std::cout << "Fps:" << cap.get(CV_CAP_PROP_FPS) << "         " << "\r";
+
+			current_tick = ((double)cv::getTickCount() - tick)/tick_freq;
+
+			if(current_tick >= 1.0){
+				std::cout << "Fps:" << fps << "         " << "\r" << std::flush;
+				fps = 0;
+				tick = (double)cv::getTickCount();
+			}else{
+				fps++;
+			}
 		}
-
-		display_frame(frame, fb);
-
-//		std::cout << "Fps:" << cap.get(CV_CAP_PROP_FPS) << "         " << "\r";
-
-		current_tick = ((double)cv::getTickCount() - tick)/tick_freq;
-
-		if(current_tick >= 1.0){
-			std::cout << "Fps:" << fps << "         " << "\r" << std::flush;
-			fps = 0;
-			tick = (double)cv::getTickCount();
-		}else{
-			fps++;
-		}
-
 	}
 
 	return 0;

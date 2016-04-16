@@ -87,6 +87,9 @@ int FrameBuffer::put(unsigned int location, unsigned short value)
 
 int FrameBuffer::put_pixel(int x, int y, unsigned short value)
 {
+	if((x > (int)this->vinfo.xres) || (y > (int)this->vinfo.yres))
+		return -1;
+
 	unsigned int location = (y * this->finfo.line_length) + (x * bytes_per_pixel);
 
 	*(fbp + location) = (char)value;
