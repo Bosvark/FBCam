@@ -67,7 +67,7 @@ int display_frame(cv::Mat &frame, fb::FrameBuffer &fb)
 
 	for(int y=0; y<height; y++)
 	{
-		y_scaled = (y * scale) + frame_offset_y;
+		y_scaled = ((height-y) * scale) + frame_offset_y;
 
 		for(int x=0; x<width; x++)
 		{
@@ -79,7 +79,7 @@ int display_frame(cv::Mat &frame, fb::FrameBuffer &fb)
 
 			unsigned short int t = r<<11 | g << 5 | b;
 
-			x_scaled = (x * scale) + frame_offset_x;
+			x_scaled = ((width-x) * scale) + frame_offset_x;
 
 			fb.put_pixel(x_scaled  , y_scaled, t);
 
@@ -184,10 +184,10 @@ int main(int argc, char *argv[])
 
 			display_frame(frame, fb);
 
-			vidcap.FrameRefresh();
+//			vidcap.FrameRefresh();
 
-	//		std::cout << "Fps:" << cap.get(CV_CAP_PROP_FPS) << "         " << "\r";
-
+			std::cout << "Fps:" << cap.get(CV_CAP_PROP_FPS) << "         " << "\r";
+/*
 			current_tick = ((double)cv::getTickCount() - tick)/tick_freq;
 
 			if(current_tick >= 1.0){
@@ -197,6 +197,7 @@ int main(int argc, char *argv[])
 			}else{
 				fps++;
 			}
+*/
 		}
 	}
 
