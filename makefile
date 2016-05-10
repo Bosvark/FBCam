@@ -8,7 +8,7 @@ NFSDIR     = /export/nfs
 
 SYSROOT = /opt/arm/RaspberryPi2/sysroot
 
-OPENCV_LIBS = -L$(SYSROOT)/usr/local/lib -lopencv_shape -lopencv_stitching -lopencv_objdetect -lopencv_superres -lopencv_videostab -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_video -lopencv_photo -lopencv_ml -lopencv_imgproc -lopencv_flann -lopencv_core
+OPENCV_LIBS = -L$(SYSROOT)/usr/local/lib -lpthread -lopencv_shape -lopencv_stitching -lopencv_objdetect -lopencv_superres -lopencv_videostab -lopencv_calib3d -lopencv_features2d -lopencv_highgui -lopencv_videoio -lopencv_imgcodecs -lopencv_video -lopencv_photo -lopencv_ml -lopencv_imgproc -lopencv_flann -lopencv_core
 # build environment
 GNUPREFIX     = arm-linux-gnueabihf-
 

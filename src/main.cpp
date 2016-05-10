@@ -1,9 +1,12 @@
 #include <csignal>
+#include <sys/ioctl.h>
 #include <iostream>
 #include <thread>
 #include <mutex>
 #include <stdio.h>
 #include <unistd.h>
+#include <termios.h>
+#include <pthread.h>
 #include <opencv2/opencv.hpp>
 #include "framebuffer.h"
 #include "VideoCapture.h"
@@ -48,7 +51,7 @@ int info(void)
 	return 0;
 }
 
-int scale=1;
+int scale=2;
 int frame_offset_x=0;
 int frame_offset_y=0;
 
@@ -109,6 +112,66 @@ void signalHandler(int signum)
 	}
 }
 
+int getch(void) {
+    struct termios oldattr, newattr;
+    int ch;
+    tcgetattr( STDIN_FILENO, &oldattr );
+    newattr = oldattr;
+    newattr.c_lflag &= ~( ICANON | ECHO );
+    tcsetattr( STDIN_FILENO, TCSANOW, &newattr );
+    ch = getchar();
+    tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
+    return ch;
+}
+
+char kbhit(void)
+{
+	static const int STDIN = 0;
+	timeval timeout;
+	fd_set rdset;
+
+	FD_ZERO(&rdset);
+	FD_SET(STDIN, &rdset);
+	timeout.tv_sec  = 0;
+	timeout.tv_usec = 0;
+
+	return select(STDIN + 1, &rdset, NULL, NULL, &timeout);
+}
+
+void *servo_control(void *parm)
+{
+	while(1){
+		if(kbhit()){
+			int inchar = getch();
+
+			if(inchar == 27){
+				inchar = getch();
+				inchar = getch();
+
+				if(inchar == 65){
+					std::cout << "Up" << std::endl;
+					system("echo 1=-2 > /dev/servoblaster\n");
+				}else if(inchar == 66){
+					std::cout << "Down" << std::endl;
+					system("echo 1=+2 > /dev/servoblaster\n");
+				}else if(inchar == 68){
+					std::cout << "Left" << std::endl;
+					system("echo 2=+2 > /dev/servoblaster\n");
+				}else if(inchar == 67){
+					std::cout << "Right" << std::endl;
+					system("echo 2=-2 > /dev/servoblaster\n");
+				}
+			}else
+				std::cout << "Key pressed:" << inchar << std::endl;
+
+			fflush(stdout);
+
+			if(inchar == 'q')
+				exit(0);
+		}
+	}
+}
+
 int main(int argc, char *argv[])
 {
 	signal(SIGINT   , signalHandler);
@@ -118,6 +181,10 @@ int main(int argc, char *argv[])
 
 	if(info() < 0)
 		return -1;
+
+	pthread_t ctrl_thrd;
+	pthread_create( &ctrl_thrd, NULL, servo_control, NULL);
+	pthread_detach(ctrl_thrd);
 
 	fb::FrameBuffer fb = fb::FrameBuffer("/dev/fb0");
 
@@ -180,13 +247,13 @@ int main(int argc, char *argv[])
 				frame_offset_y=((fb.height() - (frame.rows*scale))/2);
 			}
 
-			std::cout << "." << std::flush;
+//			std::cout << "." << std::flush;
 
 			display_frame(frame, fb);
 
 //			vidcap.FrameRefresh();
 
-			std::cout << "Fps:" << cap.get(CV_CAP_PROP_FPS) << "         " << "\r";
+//			std::cout << "Fps:" << cap.get(CV_CAP_PROP_FPS) << "         " << "\r";
 /*
 			current_tick = ((double)cv::getTickCount() - tick)/tick_freq;
 
