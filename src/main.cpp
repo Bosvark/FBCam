@@ -149,20 +149,15 @@ void *servo_control(void *parm)
 				inchar = getch();
 
 				if(inchar == 65){
-					std::cout << "Up" << std::endl;
 					system("echo 1=-2 > /dev/servoblaster\n");
 				}else if(inchar == 66){
-					std::cout << "Down" << std::endl;
 					system("echo 1=+2 > /dev/servoblaster\n");
 				}else if(inchar == 68){
-					std::cout << "Left" << std::endl;
 					system("echo 2=+2 > /dev/servoblaster\n");
 				}else if(inchar == 67){
-					std::cout << "Right" << std::endl;
 					system("echo 2=-2 > /dev/servoblaster\n");
 				}
-			}else
-				std::cout << "Key pressed:" << inchar << std::endl;
+			}
 
 			fflush(stdout);
 
@@ -254,7 +249,7 @@ int main(int argc, char *argv[])
 //			vidcap.FrameRefresh();
 
 //			std::cout << "Fps:" << cap.get(CV_CAP_PROP_FPS) << "         " << "\r";
-/*
+
 			current_tick = ((double)cv::getTickCount() - tick)/tick_freq;
 
 			if(current_tick >= 1.0){
@@ -264,7 +259,6 @@ int main(int argc, char *argv[])
 			}else{
 				fps++;
 			}
-*/
 		}
 	}
 
